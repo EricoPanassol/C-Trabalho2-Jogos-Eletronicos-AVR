@@ -4,6 +4,4 @@ O presente trabalho tem por objetivo permitir aos alunos desenvolver aplicaçõe
 # 2. Tema de desenvolvimento
 Durante o semestre, a disciplina apresentou tecnicamente alguns recursos explorados para a programação de baixo nível. Todavia tais recursos/conhecimentos são simplesmente parte de uma solução maior. Neste contexto, este trabalho final propõe um tema:
 
-<p align="center">
-# Jogos Eletrônicos
-</p>
+# <p align="center"> Jogos Eletrônicos </p>
