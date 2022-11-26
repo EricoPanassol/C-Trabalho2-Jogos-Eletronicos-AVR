@@ -88,7 +88,7 @@ int main()
 
         // up
         if(pulo == 1){
-            if(player_tb > 15){
+            if(player_tb > 13){
                 player_tb -= 1;
                 player_bb -= 1;
             }
@@ -111,7 +111,13 @@ int main()
         // verify colision
         if(enemy_lb <= player_rb && enemy_tb < player_bb && enemy_bb > player_tb){
             nokia_lcd_clear();
-            nokia_lcd_write_string("Voce perdeu\001", 1);
+            nokia_lcd_set_cursor(18, 10);
+            nokia_lcd_write_string("You lost", 1);
+            nokia_lcd_set_cursor(15, 27);
+            char str[13];
+            sprintf(str, "Points: %d", points);
+            nokia_lcd_write_string(str, 1);
+
             nokia_lcd_render();
             jogando = 0;
         }
