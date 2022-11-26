@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-
 void nokia_lcd_init(void);
 void nokia_lcd_clear(void);
 void nokia_lcd_set_cursor(uint8_t x, uint8_t y);
@@ -17,7 +16,7 @@ void nokia_lcd_render(void);
 void nokia_lcd_drawline(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawrect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawcircle(uint8_t x1, uint8_t y1, uint8_t r);
-void resetEnemy();
+void drawEnemy();
 void drawElements();
 
 // flor
@@ -39,10 +38,9 @@ uint8_t enemy_rb = 80;
 uint8_t enemy_bb = 43; // chão do eixo y
 
 uint8_t points = 0;
-
 uint8_t jogando = 1;
-
 uint8_t pressed = 0;
+uint8_t pulo = 0;
 
 ISR(INT0_vect)
 {
@@ -51,7 +49,6 @@ ISR(INT0_vect)
         pressed = 1;
     }
 }
-
 
 int main()
 {
@@ -76,9 +73,8 @@ int main()
 
     sei();
     
-    int pulo = 0;
 
-
+    // game loop
     while(jogando == 1){
         
         if(pressed == 1){
@@ -90,16 +86,16 @@ int main()
             pressed = 0;
         }
 
-        // subida
+        // up
         if(pulo == 1){
-            if(player_tb > 13){
+            if(player_tb > 15){
                 player_tb -= 1;
                 player_bb -= 1;
             }
             else{
                 pulo = 0;
             }
-        // descida
+        // down
         }else{
             if(player_bb < 43){
                 player_tb += 1;
@@ -107,10 +103,12 @@ int main()
             }
         }
         
+        // draw elements on screen
          _delay_ms(1);
-        resetEnemy();
+        drawEnemy();
         drawElements();
         
+        // verify colision
         if(enemy_lb <= player_rb && enemy_tb < player_bb && enemy_bb > player_tb){
             nokia_lcd_clear();
             nokia_lcd_write_string("Voce perdeu\001", 1);
@@ -132,7 +130,7 @@ void drawElements(){
     nokia_lcd_render();
 }
 
-void resetEnemy(){
+void drawEnemy(){
     enemy_lb -= 1;
     enemy_rb -= 1;
     if(enemy_lb <= 0 || enemy_rb <= 0){
