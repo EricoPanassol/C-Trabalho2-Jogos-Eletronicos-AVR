@@ -17,6 +17,7 @@ void nokia_lcd_render(void);
 void nokia_lcd_drawline(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawrect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawcircle(uint8_t x1, uint8_t y1, uint8_t r);
+void startMenu();
 void resetEnemy();
 void drawElements();
 
@@ -39,10 +40,10 @@ uint8_t enemy_rb = 80;
 uint8_t enemy_bb = 43; // chão do eixo y
 
 uint8_t points = 0;
-
 uint8_t jogando = 1;
-
 uint8_t pressed = 0;
+
+uint8_t start = 0;
 
 ISR(INT0_vect)
 {
@@ -52,6 +53,16 @@ ISR(INT0_vect)
     }
 }
 
+ISR(PCINT1_vect)
+{
+    if ((PINC & (1 << PC1)) || (PINC & (1 << PC2)))
+    {   
+        start = 1;
+        // nokia_lcd_clear();
+        // nokia_lcd_write_string("Oi", 1);
+        // nokia_lcd_render();
+    }
+}
 
 int main()
 {
@@ -60,13 +71,16 @@ int main()
     
     // Definindo as saídas
     DDRB |= (1 << PB0) | (1 << PB1) | (1 << PB2) | (1 << PB3) | (1 << PB4);
+    DDRC |= (1 << PC1) | (1 << PC2);
 
     // Definindo as entradas
     DDRD &= (0 << PD2);
+    DDRC &= (0 << PC0);
+
 
     // Definindo as interrupções
     PCICR |= (1 << PCIE2); // habilita vetor de interrupção de todos os PDs
-    PCMSK2 |= (1 << PCINT16); // habilita interrupção de PD0
+
 
     // Habilitando o pull-up (sempre passa 1)
     PORTD |= (1 << PD2);
@@ -77,6 +91,15 @@ int main()
     sei();
     
     int pulo = 0;
+
+    while(1){
+        startMenu();
+        if(start == 1){
+            break;
+        }
+    }
+
+    nokia_lcd_clear();
 
 
     while(jogando == 1){
@@ -121,6 +144,17 @@ int main()
 
 }
 
+
+void startMenu(){
+    nokia_lcd_set_cursor(29, 0); 
+    nokia_lcd_write_string("Game", 1);
+    nokia_lcd_set_cursor(10, 17); 
+    nokia_lcd_write_string("(1) - Start", 1);
+    nokia_lcd_set_cursor(10, 34);
+    nokia_lcd_write_string("(2) - Exit", 1);
+    nokia_lcd_render();
+}
+
 void drawElements(){
     nokia_lcd_clear();
     nokia_lcd_drawline(floor_x1, floor_y1, floor_x2, floor_y2);
@@ -141,7 +175,3 @@ void resetEnemy(){
         points++;
     }
 }
-
-    
-
-   
