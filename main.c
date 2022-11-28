@@ -16,8 +16,9 @@ void nokia_lcd_render(void);
 void nokia_lcd_drawline(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawrect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawcircle(uint8_t x1, uint8_t y1, uint8_t r);
-void won();
-void lost();
+void startScreen();
+void victoryScreen();
+void defeatScreen();
 void drawEnemy();
 void drawElements();
 
@@ -39,6 +40,7 @@ uint8_t enemy_tb = 33; // cresce pra 0
 uint8_t enemy_rb = 80; 
 uint8_t enemy_bb = 43; // chão do eixo y
 
+// other variables
 uint8_t points = 0;
 uint8_t jogando = 1;
 uint8_t pressed = 0;
@@ -75,24 +77,25 @@ int main()
 
     sei();
     
+    // start screen loop
+    while(pressed == 0){
+        startScreen();
+    }
 
     // game loop
     while(jogando == 1){
         
-        // winning condition
+        // victory condition
         if(points == 10){
-            won();
+            victoryScreen();
         }
+
         else{
+            // allowed to jump
             if(pressed == 1){
                 pulo = 1;
-
-                if(jogando == 0){
-                    return -1;
-                }
                 pressed = 0;
             }
-
             // up
             if(pulo == 1){
                 if(player_tb > 13){
@@ -115,18 +118,19 @@ int main()
             drawEnemy();
             drawElements();
             
-            // verify colision and lose condition
+            // verify colision and defeat condition
             if(enemy_lb <= player_rb && enemy_tb < player_bb && enemy_bb > player_tb){
-                lost();
+                defeatScreen();
+                jogando = 0;
             }
         }
     }
 
 }
 
-void won(){
+void victoryScreen(){
     nokia_lcd_clear();
-    nokia_lcd_set_cursor(18, 10);
+    nokia_lcd_set_cursor(20, 10);
     nokia_lcd_write_string("You Won", 1);
     nokia_lcd_set_cursor(15, 27);
     char str[13];
@@ -135,16 +139,26 @@ void won(){
     nokia_lcd_render();
 }
 
-void lost(){
+void startScreen()
+{
+    nokia_lcd_set_cursor(29, 0);
+    nokia_lcd_write_string("Game", 1);
+    nokia_lcd_set_cursor(22, 20);
+    nokia_lcd_write_string("Press w", 1);
+    nokia_lcd_set_cursor(18, 30);
+    nokia_lcd_write_string("to start", 1);
+    nokia_lcd_render();
+}
+
+void defeatScreen(){
     nokia_lcd_clear();
     nokia_lcd_set_cursor(18, 10);
-    nokia_lcd_write_string("You Lost", 1);
+    nokia_lcd_write_string("You lost", 1);
     nokia_lcd_set_cursor(15, 27);
     char str[13];
     sprintf(str, "Points: %d", points);
     nokia_lcd_write_string(str, 1);
     nokia_lcd_render();
-    jogando = 0;
 }
 
 void drawElements(){
