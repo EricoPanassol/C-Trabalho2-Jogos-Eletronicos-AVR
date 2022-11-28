@@ -82,7 +82,7 @@ int main()
     while(jogando == 1){
         
         // winning condition
-        if(count >= 10){
+        if(count == 10){
             won();
         }
         else{
