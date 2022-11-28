@@ -16,6 +16,8 @@ void nokia_lcd_render(void);
 void nokia_lcd_drawline(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawrect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void nokia_lcd_drawcircle(uint8_t x1, uint8_t y1, uint8_t r);
+void won();
+void lost();
 void drawEnemy();
 void drawElements();
 
@@ -41,6 +43,8 @@ uint8_t points = 0;
 uint8_t jogando = 1;
 uint8_t pressed = 0;
 uint8_t pulo = 0;
+
+int count = 0;
 
 ISR(INT0_vect)
 {
@@ -77,52 +81,72 @@ int main()
     // game loop
     while(jogando == 1){
         
-        if(pressed == 1){
-            pulo = 1;
-
-            if(jogando == 0){
-                return -1;
-            }
-            pressed = 0;
+        // winning condition
+        if(count >= 10){
+            won();
         }
+        else{
+            if(pressed == 1){
+                pulo = 1;
 
-        // up
-        if(pulo == 1){
-            if(player_tb > 13){
-                player_tb -= 1;
-                player_bb -= 1;
+                if(jogando == 0){
+                    return -1;
+                }
+                pressed = 0;
             }
-            else{
-                pulo = 0;
-            }
-        // down
-        }else{
-            if(player_bb < 43){
-                player_tb += 1;
-                player_bb += 1;
-            }
-        }
-        
-        // draw elements on screen
-         _delay_ms(1);
-        drawEnemy();
-        drawElements();
-        
-        // verify colision
-        if(enemy_lb <= player_rb && enemy_tb < player_bb && enemy_bb > player_tb){
-            nokia_lcd_clear();
-            nokia_lcd_set_cursor(18, 10);
-            nokia_lcd_write_string("You lost", 1);
-            nokia_lcd_set_cursor(15, 27);
-            char str[13];
-            sprintf(str, "Points: %d", points);
-            nokia_lcd_write_string(str, 1);
 
-            nokia_lcd_render();
-            jogando = 0;
+            // up
+            if(pulo == 1){
+                if(player_tb > 13){
+                    player_tb -= 1;
+                    player_bb -= 1;
+                }
+                else{
+                    pulo = 0;
+                }
+            // down
+            }else{
+                if(player_bb < 43){
+                    player_tb += 1;
+                    player_bb += 1;
+                }
+            }
+            
+            // draw elements on screen
+            _delay_ms(1);
+            drawEnemy();
+            drawElements();
+            
+            // verify colision and lose condition
+            if(enemy_lb <= player_rb && enemy_tb < player_bb && enemy_bb > player_tb){
+                lost();
+            }
         }
     }
 
+}
+
+void won(){
+    nokia_lcd_clear();
+    nokia_lcd_set_cursor(18, 10);
+    nokia_lcd_write_string("You Won", 1);
+    nokia_lcd_set_cursor(15, 27);
+    char str[13];
+    sprintf(str, "Points: %d", points);
+    nokia_lcd_write_string(str, 1);
+    nokia_lcd_render();
+}
+
+void lost(){
+    nokia_lcd_clear();
+    nokia_lcd_set_cursor(18, 10);
+    nokia_lcd_write_string("You Lost", 1);
+    nokia_lcd_set_cursor(15, 27);
+    char str[13];
+    sprintf(str, "Points: %d", points);
+    nokia_lcd_write_string(str, 1);
+    nokia_lcd_render();
+    jogando = 0;
 }
 
 void drawElements(){
@@ -143,6 +167,7 @@ void drawEnemy(){
         enemy_lb = 80;
         enemy_rb = 76;
         points++;
+        count++;
     }
 }
 
