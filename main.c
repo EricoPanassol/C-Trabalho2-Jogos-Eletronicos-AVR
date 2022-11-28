@@ -44,8 +44,6 @@ uint8_t jogando = 1;
 uint8_t pressed = 0;
 uint8_t pulo = 0;
 
-int count = 0;
-
 ISR(INT0_vect)
 {
     if (!(PIND & (1 << PD2)))
@@ -82,7 +80,7 @@ int main()
     while(jogando == 1){
         
         // winning condition
-        if(count == 10){
+        if(points == 10){
             won();
         }
         else{
@@ -167,7 +165,6 @@ void drawEnemy(){
         enemy_lb = 80;
         enemy_rb = 76;
         points++;
-        count++;
     }
 }
 
